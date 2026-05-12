@@ -1247,7 +1247,7 @@ function generatePDF() {
   doc.setFont('times','normal');
   doc.setFontSize(11);
   doc.text('Dear Sir/Madam,', lm, y); y += 6;
-  doc.text('Enclosed please find the following documents relating to your below mentioned jobs', lm, y, { maxWidth: pw }); y += 10;
+  doc.text('Enclosed Please find attached the Invoice, Transportation LR, and supporting documents', lm, y, { maxWidth: pw }); y += 10;
 
   const tableBody = selectedRows.map((r, i) => [
     String(i+1),
@@ -1285,7 +1285,7 @@ function generatePDF() {
   doc.setFontSize(11);
   doc.text('List of Enclosures', lm, y); y += 5;
   doc.setFont('times','normal');
-  doc.text('One set of original import documents', lm, y); y += 12;
+  doc.text('Original Invoice & documents', lm, y); y += 12;
 
   doc.setFont('times','normal');
   doc.setFontSize(11);
