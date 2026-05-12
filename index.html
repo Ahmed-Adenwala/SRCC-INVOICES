@@ -917,10 +917,10 @@ function getSubjectFromRows(rows) {
     if (/I/.test(no)) hasI = true;
     if (/E/.test(no)) hasE = true;
   });
-  if (hasI && hasE) return 'IMPORT & EXPORT CLEARANCE INVOICE';
-  if (hasI) return 'IMPORT CLEARANCE INVOICE';
-  if (hasE) return 'EXPORT CLEARANCE INVOICE';
-  return 'MISC INVOICE';
+  if (hasI && hasE) return 'Transportation Invoice';
+  if (hasI) return 'Transportation Invoice';
+  if (hasE) return 'Transportation Invoice';
+  return 'Transportation Invoice';
 }
 
 // ── Day View (Pending Invoices) ──
