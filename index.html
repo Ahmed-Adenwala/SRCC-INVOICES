@@ -1203,7 +1203,7 @@ function updateAddrPreview() {
     previewText.textContent = '';
     return;
   }
-previewText.textContent = addrText;
+  previewText.textContent = addrText.replace(/\n{2,}/g, '\n').trim();
   previewBox.classList.add('visible');
   setTimeout(() => { previewBox.scrollTop = previewBox.scrollHeight; }, 5);
 }
