@@ -1205,7 +1205,7 @@ function updateAddrPreview() {
   }
   previewText.textContent = addrText.replace(/\n{2,}/g, '\n').trim();
   previewBox.classList.add('visible');
-  setTimeout(() => { previewBox.scrollTop = previewBox.scrollHeight; }, 5);
+  setTimeout(() => { previewBox.scrollTop = previewBox.scrollHeight; }, 2);
 }
 
 function renderAddrPills(party) {
