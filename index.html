@@ -450,24 +450,21 @@
   /* ── NEW: Address Preview Box ── */
 /* ── Address Preview Box ── */
   .addr-preview-box {
-    margin-left: 10px;
     background: #141a17;
     border: 1px solid #2a3d32;
     border-left: 3px solid var(--accent2);
     border-radius: 3px;
-    padding: 2px 4px;
+    padding: 10px 12px;
     font-family: var(--mono);
-    font-size: 11px;
-    line-height: 1.5;
+    font-size: 12px;
+    line-height: 1.6;
     color: var(--text);
     white-space: pre-wrap;
-    width: 220px;
-    max-height: 90px;
+    max-height: 200px;
     overflow-y: auto;
-    flex-shrink: 0;
-    align-self: flex-start;
     transition: border-color 0.2s;
     display: none;
+    align-self: flex-start;
   }
 
   .addr-preview-box.visible { display: block; }
@@ -632,40 +629,51 @@
   <div class="step-block" id="step3-block" style="display:none;">
     <div class="step-label"><span class="step-num">3</span> Kind Attention &amp; Print PDF</div>
     <div>
-<div style="display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap;">
-        <div class="field-group relative" style="flex:1; min-width:240px;">
-          <label>Kind Attention (Contact Name)</label>
-          <input type="text" id="cl-attn" placeholder="e.g. MR. Priyank Shah" style="width:100%;" oninput="onAttnInput()" onblur="hideAttnSuggestions()" autocomplete="off">
-          <div class="suggestions" id="attn-suggestions" style="display:none; width:100%;"></div>
-        </div>
+<!-- Outer: left control panel + right preview panel -->
+    <div style="display:flex; align-items:flex-start; gap:0;">
 
-        <!-- ── Address field + preview side by side ── -->
-        <div class="field-group" style="flex:1; min-width:240px;">
-          <label>Party Address (for envelope)</label>
-          <div class="pill-row" id="addr-pills"></div>
-          <div style="display:flex; align-items:flex-start;">
-            <select id="addr-select" style="flex:1; font-size:12px;" onchange="updateAddrPreview()">
+      <!-- LEFT: fields + buttons -->
+      <div style="display:flex; flex-direction:column; gap:14px; flex-shrink:0; width:560px;">
+
+        <!-- Row: K/A + Address dropdown side by side -->
+        <div style="display:flex; gap:14px; align-items:flex-end;">
+
+          <!-- K/A input -->
+          <div class="field-group relative" style="flex:1; min-width:0;">
+            <label>Kind Attention</label>
+            <input type="text" id="cl-attn" placeholder="e.g. MR. Priyank Shah" style="width:100%;"
+              oninput="onAttnInput()" onblur="hideAttnSuggestions()" autocomplete="off">
+            <div class="suggestions" id="attn-suggestions" style="display:none; width:100%;"></div>
+          </div>
+
+          <!-- Address dropdown -->
+          <div class="field-group" style="flex:1; min-width:0;">
+            <label>Party Address</label>
+            <div class="pill-row" id="addr-pills" style="margin-bottom:4px;"></div>
+            <select id="addr-select" style="width:100%; font-size:12px;" onchange="updateAddrPreview()">
               <option value="">— select address —</option>
             </select>
-            <!-- Preview sits to the right of the dropdown -->
-            <div class="addr-preview-box" id="addr-preview-box">
-              <div id="addr-preview-text"></div>
-            </div>
           </div>
+
         </div>
-      </div>
-      
 
-      <div style="display:flex; gap:12px; margin-top:18px; flex-wrap:wrap;">
-        <button class="btn btn-accent" style="padding:10px 28px; font-size:14px;" onclick="generatePDF()">🖨 Generate Cover Letter PDF</button>
-        <button class="btn btn-purple" style="padding:10px 20px;" onclick="printAddress()">📬 Print Address (Envelope)</button>
-        <button class="btn btn-ghost btn-sm" onclick="openPartyBook()">⚙ Manage K/A &amp; Addresses</button>
+        <!-- Buttons: equal width grid, always one row -->
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+          <button class="btn btn-accent" style="padding:11px 0; font-size:13px;" onclick="generatePDF()">🖨 Generate Cover Letter PDF</button>
+          <button class="btn btn-purple" style="padding:11px 0; font-size:13px;" onclick="printAddress()">📬 Print Address (Envelope)</button>
+          <button class="btn btn-ghost"  style="padding:11px 0; font-size:13px;" onclick="openPartyBook()">⚙ Manage K/A &amp; Addresses</button>
+        </div>
+
       </div>
-      <div id="selected-summary" style="margin-top:16px;"></div>
+
+      <!-- RIGHT: preview fills remaining page width -->
+      <div class="addr-preview-box" id="addr-preview-box" style="flex:1; min-width:0; margin-left:32px; max-width:none; max-height:200px;">
+        <div id="addr-preview-text"></div>
+      </div>
+
     </div>
+    <div id="selected-summary" style="margin-top:16px;"></div>
   </div>
-
-</div>
 
 <!-- ── PARTY BOOK PAGE ── -->
 <div class="page" id="page-partybook">
