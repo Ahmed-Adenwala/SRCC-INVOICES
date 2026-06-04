@@ -672,10 +672,13 @@
       </div>
 
     </div>
-    <div id="selected-summary" style="margin-top:16px;"></div>
+<div id="selected-summary" style="margin-top:16px;"></div>
   </div>
-
+  </div>
+  </div>
+</div>
 <!-- ── PARTY BOOK PAGE ── -->
+</div>
 <div class="page" id="page-partybook">
   <p class="section-title">Party Book</p>
   <p class="section-sub">MANAGE KIND ATTENTION NAMES & ADDRESSES PER PARTY</p>
@@ -1024,7 +1027,11 @@ function renderDayView() {
         <thead><tr><th>#</th><th>Voucher No.</th><th>Type</th><th>Gross Amount</th><th>Status</th></tr></thead>
         <tbody>`;
     invs.forEach(r => {
-      const typeTag = r.vchType === 'A-AMD-IMPORT' ? '<span class="tag tag-a">GIA</span>' : r.vchType === 'Credit Note' ? '<span class="tag tag-done">CN</span>' : '<span class="tag tag-r">GIR</span>';
+      const typeTag = r.vchType === 'A-AMD-IMPORT'
+        ? '<span class="tag tag-a">GIA</span>'
+        : r.vchType === 'Credit Note'
+        ? '<span class="tag tag-done">CN</span>'
+        : '<span class="tag tag-r">GIR</span>';
       const done = DONE_SET.has(r.vchNo);
       const statusBadge = done ? '<span class="done-badge">✓ Done</span>' : '<span style="font-family:var(--mono);font-size:10px;color:var(--accent);">Pending</span>';
       html += `<tr class="${done ? 'done-row' : ''}">
