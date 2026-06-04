@@ -897,9 +897,10 @@ function handleFile(file) {
       const typeIdx = headers.findIndex(h => h.includes('Vch Type') || h.includes('Voucher Type'));
       const noIdx   = headers.findIndex(h => h.includes('Vch No') || h.includes('Voucher No'));
       let amtIdx = headers.findIndex(h => h === 'Debit');
+      let creditIdx = headers.findIndex(h => h === 'Credit');
       if (amtIdx < 0) amtIdx = headers.findIndex(h => h.includes('Gross Total'));
       if (amtIdx < 0) amtIdx = headers.findIndex(h => h === 'Value');
-
+  
       log(`Columns → Date[${dateIdx}] Party[${partIdx}] Type[${typeIdx}] VchNo[${noIdx}] Amount[${amtIdx}]`, 'ok');
 
       let added = 0, skipped = 0, badRows = 0;
@@ -912,10 +913,10 @@ function handleFile(file) {
         const vchType = String(row[typeIdx] || '').trim();
         const vchNo   = String(row[noIdx]   || '').trim();
         let gross = parseFloat(row[amtIdx]) || 0;
+        if (!gross && creditIdx >= 0) gross = parseFloat(row[creditIdx]) || 0;
         if (!gross) gross = parseFloat(row[amtIdx + 1]) || 0;
-
-        if (!party || !vchNo || party === 'Particulars' || vchNo === 'Vch No.' || party.toLowerCase().startsWith('total')) { badRows++; continue; }
-
+        
+if (!party || !vchNo || party === 'Particulars' || vchNo === 'Vch No.' || vchNo === 'Vch No' || party.toLowerCase().startsWith('total') || vchNo.toLowerCase().startsWith('total')) { badRows++; continue; }
         let dateStr = '';
         if (typeof dateRaw === 'string' && dateRaw.trim().length >= 8) {
           const parts = dateRaw.trim().split('/');
@@ -1023,7 +1024,7 @@ function renderDayView() {
         <thead><tr><th>#</th><th>Voucher No.</th><th>Type</th><th>Gross Amount</th><th>Status</th></tr></thead>
         <tbody>`;
     invs.forEach(r => {
-      const typeTag = r.vchType === 'A-AMD-IMPORT' ? '<span class="tag tag-a">GIA</span>' : '<span class="tag tag-r">GIR</span>';
+      const typeTag = r.vchType === 'A-AMD-IMPORT' ? '<span class="tag tag-a">GIA</span>' : r.vchType === 'Credit Note' ? '<span class="tag tag-done">CN</span>' : '<span class="tag tag-r">GIR</span>';
       const done = DONE_SET.has(r.vchNo);
       const statusBadge = done ? '<span class="done-badge">✓ Done</span>' : '<span style="font-family:var(--mono);font-size:10px;color:var(--accent);">Pending</span>';
       html += `<tr class="${done ? 'done-row' : ''}">
