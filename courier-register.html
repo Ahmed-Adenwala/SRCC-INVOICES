@@ -1,0 +1,537 @@
+<div id="app-root"></div>
+
+<style>
+  #app-root {
+    --ink: #ece7de;
+    --paper: #0a0a0a;
+    --header-green: #ac925f;
+    --header-blue: #8a7248;
+    --row-a: #161613;
+    --row-b: #101010;
+    --line: #2c2a24;
+    --accent: #ac925f;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    min-height: 100vh;
+    padding: 32px 28px 60px;
+    box-sizing: border-box;
+  }
+
+  #app-root * { box-sizing: border-box; }
+
+  .cr-wrap { max-width: 1180px; margin: 0 auto; }
+
+  .cr-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .cr-title {
+    font-family: 'Georgia', serif;
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: 0.2px;
+  }
+
+  .cr-title span { color: var(--header-green); }
+
+  .cr-sub {
+    font-size: 13px;
+    color: #9a9282;
+    margin-bottom: 28px;
+    max-width: 640px;
+    line-height: 1.5;
+  }
+
+  .cr-panel {
+    background: #121110;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 22px;
+    margin-bottom: 22px;
+  }
+
+  .cr-drop {
+    border: 2px dashed #4a4234;
+    border-radius: 8px;
+    padding: 34px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+    background: #0d0d0c;
+  }
+  .cr-drop:hover, .cr-drop.drag { border-color: var(--header-green); background: #161410; }
+
+  .cr-drop-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; color: var(--ink); }
+  .cr-drop-sub { font-size: 12.5px; color: #857c6a; }
+
+  .cr-filelist {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+
+  .cr-file-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    background: var(--row-a);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 7px 10px;
+  }
+
+  .cr-file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 8px; }
+
+  .cr-file-status { font-size: 11.5px; font-weight: 600; flex-shrink: 0; }
+  .cr-status-ok { color: #8fae6a; }
+  .cr-status-warn { color: var(--accent); }
+  .cr-status-pending { color: #857c6a; }
+
+  .cr-remove {
+    background: none; border: none; color: #b06a5a; cursor: pointer; font-size: 13px;
+    margin-left: 8px; padding: 0 4px;
+  }
+
+  .cr-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; align-items: center; }
+
+  .cr-btn {
+    border: none;
+    border-radius: 7px;
+    padding: 10px 18px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter .15s, transform .1s;
+  }
+  .cr-btn:active { transform: scale(0.98); }
+  .cr-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .cr-btn-primary { background: var(--header-green); color: #fff; }
+  .cr-btn-primary:hover:not(:disabled) { filter: brightness(1.06); }
+
+  .cr-btn-secondary { background: var(--header-blue); color: #fff; }
+  .cr-btn-secondary:hover:not(:disabled) { filter: brightness(1.06); }
+
+  .cr-btn-ghost { background: transparent; color: #9a9282; border: 1px solid var(--line); }
+  .cr-btn-ghost:hover:not(:disabled) { background: #1a1812; }
+
+  .cr-note {
+    font-size: 12px;
+    color: #857c6a;
+    margin-left: auto;
+  }
+
+  .cr-table-wrap {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+  }
+
+  table.cr-table { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 900px; }
+
+  table.cr-table caption {
+    background: var(--header-green);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 9px;
+    caption-side: top;
+    letter-spacing: .3px;
+  }
+
+  table.cr-table th {
+    background: var(--header-blue);
+    color: #fff;
+    font-weight: 600;
+    text-align: left;
+    padding: 9px 10px;
+    position: sticky;
+    top: 0;
+  }
+
+  table.cr-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  table.cr-table tbody tr:nth-child(odd) { background: var(--row-a); }
+  table.cr-table tbody tr:nth-child(even) { background: var(--row-b); }
+
+  td.cr-editable {
+    cursor: text;
+    min-width: 90px;
+  }
+  td.cr-editable:focus {
+    outline: 2px solid var(--header-green);
+    outline-offset: -2px;
+    background: #1a1812;
+  }
+
+  .cr-party { font-weight: 700; }
+
+  .cr-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #857c6a;
+    font-size: 13.5px;
+  }
+
+  .cr-flag {
+    display: inline-block;
+    font-size: 10.5px;
+    background: #241f14;
+    color: var(--accent);
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-left: 6px;
+    font-weight: 600;
+  }
+
+  .cr-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1c1a14;
+    color: var(--ink);
+    padding: 10px 18px;
+    border-radius: 7px;
+    font-size: 13px;
+    border: 1px solid var(--line);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    z-index: 50;
+  }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+
+<script>
+(function () {
+  const root = document.getElementById('app-root');
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+  // ---------- state ----------
+  let files = [];        // {id, name, status: 'pending'|'ok'|'warn', row}
+  let rows = [];         // extracted rows {party, attn, date, bills, flagged}
+  let toastTimer = null;
+  let isProcessing = false;
+
+  // ---------- date helpers ----------
+  function todayHeader() {
+    const d = new Date();
+    const dd = String(d.getDate()).padStart(2, '0');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const mm = months[d.getMonth()];
+    const yyyy = d.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+  }
+
+  // ---------- PDF text extraction ----------
+  async function extractText(arrayBuffer) {
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let full = '';
+    for (let p = 1; p <= pdf.numPages; p++) {
+      const page = await pdf.getPage(p);
+      const content = await page.getTextContent();
+      // group items into lines using y-position
+      const lines = {};
+      content.items.forEach(item => {
+        const y = Math.round(item.transform[5]);
+        if (!lines[y]) lines[y] = [];
+        lines[y].push(item.str);
+      });
+      const ys = Object.keys(lines).map(Number).sort((a, b) => b - a);
+      ys.forEach(y => { full += lines[y].join(' ') + '\n'; });
+    }
+    return full;
+  }
+
+  // ---------- field parsing ----------
+  function parseFields(text) {
+    const norm = text.replace(/\r/g, '');
+
+    const partyMatch = norm.match(/TO\s*[:\-]\s*(.+)/i);
+    const attnMatch = norm.match(/KIND\s*ATTN\s*[:\-]\s*(.+)/i);
+
+    const party = partyMatch ? partyMatch[1].trim() : '';
+    const attn = attnMatch ? attnMatch[1].trim() : '';
+    // Date column always reflects today (the courier date), not the invoice date on the PDF.
+    const date = todayHeader();
+
+    // Bill numbers: pattern like ABC/1234/26-27, MIS/D/0176/26-27, BRK/000014/26-27
+    // Applied across the FULL extracted text (all pages), so multi-page PDFs are covered.
+    const billRegex = /\b[A-Z]{1,6}(?:\/[A-Z])?\/[A-Za-z0-9]+\/\d{2}-\d{2,4}\b/g;
+    const billsFound = norm.match(billRegex) || [];
+    const bills = [...new Set(billsFound)];
+
+    const flagged = !party || !attn || bills.length === 0;
+
+    return { party, attn, date, bills, flagged };
+  }
+
+  // ---------- rendering ----------
+  function render() {
+    root.innerHTML = `
+      <div class="cr-wrap">
+        <div class="cr-head">
+          <div class="cr-title">Courier <span>Register</span> Builder</div>
+        </div>
+        <div class="cr-sub">Drop in your clearance-advice PDFs. This reads the Party Name, Kind Attention, Date and Bill Numbers from each, and lays them out ready for the courier log — you just fill in Docket No. and Courier Co. before exporting.</div>
+
+        <div class="cr-panel">
+          <div class="cr-drop" id="cr-dropzone">
+            <div class="cr-drop-title">Click to choose PDFs, or drag them here</div>
+            <div class="cr-drop-sub">Multiple files supported · nothing leaves your browser</div>
+            <input type="file" id="cr-file-input" accept="application/pdf" multiple style="display:none;">
+          </div>
+          <div class="cr-filelist" id="cr-filelist"></div>
+          <div class="cr-actions">
+            <button class="cr-btn cr-btn-ghost" id="cr-clear-btn" ${files.length === 0 ? 'disabled' : ''}>Clear all</button>
+            <div class="cr-note">${files.length} file${files.length === 1 ? '' : 's'} loaded${isProcessing ? ' · reading…' : ''}</div>
+          </div>
+        </div>
+
+        <div class="cr-panel">
+          <div class="cr-table-wrap">
+            ${renderTable()}
+          </div>
+          <div class="cr-actions">
+            <button class="cr-btn cr-btn-secondary" id="cr-export-btn" ${rows.length === 0 ? 'disabled' : ''}>Download Excel (.xlsx)</button>
+            <div class="cr-note">${rows.length ? rows.filter(r => r.flagged).length + ' row(s) may need a manual check' : ''}</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    wireEvents();
+  }
+
+  function renderTable() {
+    if (rows.length === 0) {
+      return `<div class="cr-empty">Upload PDFs and the register will build itself.</div>`;
+    }
+    const header = todayHeader();
+    let html = `<table class="cr-table">
+      <caption>${header}</caption>
+      <thead>
+        <tr>
+          <th>Party Name</th>
+          <th>Kind Attention</th>
+          <th>Date</th>
+          <th>Bill Numbers</th>
+          <th>Docket No.</th>
+          <th>Courier Co.</th>
+        </tr>
+      </thead>
+      <tbody>`;
+    rows.forEach((r, i) => {
+      html += `<tr>
+        <td class="cr-party">${escapeHtml(r.party) || '<span class="cr-flag">missing</span>'}</td>
+        <td>${escapeHtml(r.attn) || '<span class="cr-flag">missing</span>'}</td>
+        <td>${escapeHtml(r.date) || '<span class="cr-flag">missing</span>'}</td>
+        <td>${r.bills.length ? escapeHtml(r.bills.join(', ')) : '<span class="cr-flag">none found</span>'}</td>
+        <td class="cr-editable" contenteditable="true" data-idx="${i}" data-field="docket"></td>
+        <td class="cr-editable" contenteditable="true" data-idx="${i}" data-field="courier"></td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+    return html;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  // ---------- events ----------
+  function wireEvents() {
+    const dz = document.getElementById('cr-dropzone');
+    const input = document.getElementById('cr-file-input');
+
+    dz.addEventListener('click', () => input.click());
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
+    dz.addEventListener('drop', e => {
+      e.preventDefault();
+      dz.classList.remove('drag');
+      handleFiles(e.dataTransfer.files);
+    });
+    input.addEventListener('change', e => handleFiles(e.target.files));
+
+    document.getElementById('cr-clear-btn').addEventListener('click', () => {
+      files = []; rows = []; render();
+    });
+
+    const exportBtn = document.getElementById('cr-export-btn');
+    if (exportBtn) exportBtn.addEventListener('click', exportExcel);
+
+    document.querySelectorAll('.cr-remove').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.target.getAttribute('data-id');
+        files = files.filter(f => f.id !== id);
+        render();
+      });
+    });
+
+    document.querySelectorAll('.cr-editable').forEach(cell => {
+      cell.addEventListener('input', (e) => {
+        const idx = parseInt(e.target.getAttribute('data-idx'), 10);
+        const field = e.target.getAttribute('data-field');
+        if (!rows[idx]) return;
+        rows[idx][field] = e.target.textContent;
+      });
+    });
+
+    renderFileList();
+  }
+
+  function renderFileList() {
+    const container = document.getElementById('cr-filelist');
+    if (!container) return;
+    container.innerHTML = files.map(f => `
+      <div class="cr-file-row">
+        <span class="cr-file-name">${escapeHtml(f.name)}</span>
+        <span class="cr-file-status ${f.status === 'ok' ? 'cr-status-ok' : f.status === 'warn' ? 'cr-status-warn' : 'cr-status-pending'}">
+          ${f.status === 'ok' ? 'Parsed' : f.status === 'warn' ? 'Check fields' : 'Pending'}
+        </span>
+        <button class="cr-remove" data-id="${f.id}" title="Remove">✕</button>
+      </div>
+    `).join('');
+    container.querySelectorAll('.cr-remove').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.currentTarget.getAttribute('data-id');
+        files = files.filter(f => f.id !== id);
+        rows = rows.filter((r, i) => true); // rows are rebuilt on next process pass
+        if (files.length === 0) rows = [];
+        render();
+        if (files.length > 0) processAll();
+      });
+    });
+  }
+
+  function handleFiles(fileListRaw) {
+    const incoming = Array.from(fileListRaw).filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+    incoming.forEach(f => {
+      files.push({ id: `${f.name}-${f.size}-${Date.now()}-${Math.random()}`, name: f.name, status: 'pending', file: f });
+    });
+    render();
+    if (incoming.length > 0) processAll();
+  }
+
+  async function processAll() {
+    isProcessing = true;
+    renderFileList();
+    const note = document.querySelector('.cr-note');
+    if (note) note.textContent = `${files.length} file${files.length === 1 ? '' : 's'} loaded · reading…`;
+
+    rows = [];
+    for (const f of files) {
+      try {
+        const buf = await f.file.arrayBuffer();
+        const text = await extractText(buf);
+        const parsed = parseFields(text);
+        f.status = parsed.flagged ? 'warn' : 'ok';
+        rows.push({ party: parsed.party, attn: parsed.attn, date: parsed.date, bills: parsed.bills, flagged: parsed.flagged, docket: '', courier: '' });
+      } catch (err) {
+        f.status = 'warn';
+        rows.push({ party: `(could not read "${f.name}")`, attn: '', date: '', bills: [], flagged: true, docket: '', courier: '' });
+      }
+    }
+
+    isProcessing = false;
+    render();
+    showToast(`Extracted ${rows.length} record${rows.length === 1 ? '' : 's'}`);
+  }
+
+  function showToast(msg) {
+    const existing = document.querySelector('.cr-toast');
+    if (existing) existing.remove();
+    const t = document.createElement('div');
+    t.className = 'cr-toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.remove(), 2600);
+  }
+
+  // ---------- export ----------
+  async function exportExcel() {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('Courier Register');
+
+    const headerDate = todayHeader();
+    const colWidths = [30, 22, 12, 46, 14, 16];
+    ws.columns = colWidths.map(w => ({ width: w }));
+
+    // title row
+    ws.mergeCells(1, 1, 1, 6);
+    const titleCell = ws.getCell(1, 1);
+    titleCell.value = headerDate;
+    titleCell.font = { bold: true, size: 13, color: { argb: 'FFFFFFFF' } };
+    titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+    titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFAC925F' } };
+    ws.getRow(1).height = 22;
+
+    // header row
+    const headers = ['Party Name', 'Kind Attention', 'Date', 'Bill Numbers', 'Docket No.', 'Courier Co.'];
+    const headerRow = ws.getRow(2);
+    headers.forEach((h, i) => {
+      const c = headerRow.getCell(i + 1);
+      c.value = h;
+      c.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF8A7248' } };
+      c.alignment = { horizontal: i === 0 || i === 3 ? 'left' : 'center', vertical: 'middle' };
+    });
+    headerRow.height = 20;
+
+    rows.forEach((r, idx) => {
+      const rowIdx = idx + 3;
+      const row = ws.getRow(rowIdx);
+      row.getCell(1).value = r.party;
+      row.getCell(2).value = r.attn;
+      row.getCell(3).value = r.date;
+      row.getCell(4).value = r.bills.join(', ');
+      row.getCell(5).value = r.docket || '';
+      row.getCell(6).value = r.courier || '';
+
+      row.getCell(1).font = { bold: true };
+
+      const fill = idx % 2 === 0 ? 'FFEEF4E9' : 'FFFFFFFF';
+      for (let c = 1; c <= 6; c++) {
+        row.getCell(c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: fill } };
+        row.getCell(c).border = { bottom: { style: 'thin', color: { argb: 'FFD7E0D0' } } };
+        row.getCell(c).alignment = { vertical: 'top', wrapText: true };
+      }
+    });
+
+    ws.views = [{ state: 'frozen', ySplit: 2 }];
+
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Courier_Register_${headerDate}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Excel file downloaded');
+  }
+
+  render();
+})();
+</script>
