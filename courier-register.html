@@ -1,3 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Courier Register Builder</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #0a0a0a;
+    min-height: 100vh;
+  }
+</style>
+</head>
+<body>
+
 <div id="app-root"></div>
 
 <style>
@@ -487,7 +504,7 @@
     titleCell.font = { bold: true, size: 13, color: { argb: 'FFFFFFFF' } };
     titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
     titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF70AD47' } };
-    ws.getRow(1).height = 22;
+    ws.getRow(1).height = 15;
 
     // header row
     const headers = ['Party Name', 'Kind Attention', 'Date', 'Bill Numbers', 'Docket No.', 'Courier Co.'];
@@ -499,7 +516,7 @@
       c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4472C4' } };
       c.alignment = { horizontal: i === 0 || i === 3 ? 'left' : 'center', vertical: 'middle' };
     });
-    headerRow.height = 20;
+    headerRow.height = 15;
 
     // data rows, with one blank spacer row after each record
     let rowIdx = 3;
@@ -514,22 +531,19 @@
 
       row.getCell(1).font = { bold: true };
 
-      // PDF-derived fields (Party, Attn, Date, Bills) get the pale-green fill.
-      // Docket No. / Courier Co. are manually filled, so left unshaded.
+      // Entire row A–F gets the pale-green fill, including the blank
+      // Docket No. / Courier Co. cells, so it's obvious where to type.
       for (let c = 1; c <= 6; c++) {
-        if (c <= 4) {
-          row.getCell(c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8F5E8' } };
-        }
+        row.getCell(c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8F5E8' } };
         row.getCell(c).alignment = { vertical: 'top', wrapText: true };
       }
+      row.height = 15;
       rowIdx++;
 
       // blank spacer row between records
-      ws.getRow(rowIdx).height = 6;
+      ws.getRow(rowIdx).height = 15;
       rowIdx++;
     });
-
-    ws.views = [{ state: 'frozen', ySplit: 2 }];
 
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -547,3 +561,6 @@
   render();
 })();
 </script>
+
+</body>
+</html>
